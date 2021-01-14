@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Hero } from '../core/shared/models';
 import { HeroService } from '../core/shared/services/hero.service';
 
 @Component({
@@ -7,15 +8,26 @@ import { HeroService } from '../core/shared/services/hero.service';
   styleUrls: ['./heroes.component.scss']
 })
 export class HeroesComponent implements OnInit {
-  heroes: any = [];
+  heroes: Hero[];
 
-  constructor(private heroService: HeroService) {}
+  constructor(private heroService: HeroService) {
+    this.heroes = [];
+  }
 
   ngOnInit() {
     this.getHeroes();
   }
 
   getHeroes(): void {
-    this.heroes = this.heroService.getHeroes();
+    this.heroService.getHeroes().subscribe(heroes => this.heroes = heroes);
+  }
+
+  add(name: string): void {
+    name = name.trim();
+    if (!name) { return; }
+    this.heroService.addHero({ name } as Hero)
+      .subscribe(hero => {
+        this.heroes.push(hero);
+      });
   }
 }
